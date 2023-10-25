@@ -6,6 +6,7 @@ import ExcelJS from 'exceljs';
 // load openapi json
 import spec from '../.cache/test.json';
 import createCover from './functions/createCover';
+import createIndex from './functions/createIndex';
 
 // OpenAPI Info 가져오기
 const info = spec.info;
@@ -39,4 +40,8 @@ const workbook = new ExcelJS.Workbook();
 // 표지 생성
 createCover(workbook, info);
 
+// tag별 paths 묶음
+createIndex(workbook, spec.servers, pathsByTag);
+
+// 엑셀을 파일로 export
 workbook.xlsx.writeFile('./output.xlsx');
