@@ -10,7 +10,9 @@
     "build": "tsc",
     "debug": "ts-node src/main.ts"
   },
-  "dependencies": {},
+  "dependencies": {
+    "exceljs": "^4.4.0"
+  },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^6.9.0",
     "@typescript-eslint/parser": "^6.9.0",
