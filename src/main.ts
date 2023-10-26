@@ -4,7 +4,7 @@
 import ExcelJS from 'exceljs';
 
 // load openapi json
-import spec from '../.cache/test.json';
+import spec from '../.cache/example.json';
 import createCover from './functions/createCover';
 import createIndex from './functions/createIndex';
 
@@ -13,7 +13,7 @@ const info = spec.info;
 
 // 태그별 paths 묶음
 const pathsByTag: Record<string, any[]> = {
-  '': [],
+  default: [],
 };
 
 // paths를 순회하면서 method를 검색
@@ -30,18 +30,27 @@ for (const [path, detail] of Object.entries(spec.paths)) {
         }
       }
     } else {
-      pathsByTag[''].push(apiDetail);
+      pathsByTag['default'].push(apiDetail);
     }
   }
 }
 
-const workbook = new ExcelJS.Workbook();
+try {
+  const workbook = new ExcelJS.Workbook();
 
-// 표지 생성
-createCover(workbook, info);
+  // 표지 생성
+  createCover(workbook, info);
 
-// tag별 paths 묶음
-createIndex(workbook, spec.servers, pathsByTag);
+  // tag별 paths 묶음
+  createIndex(
+    workbook,
+    spec.servers,
+    spec.components.securitySchemes,
+    pathsByTag,
+  );
 
-// 엑셀을 파일로 export
-workbook.xlsx.writeFile('./output.xlsx');
+  // 엑셀을 파일로 export
+  workbook.xlsx.writeFile('./output.xlsx');
+} catch (error) {
+  console.error(error);
+}
