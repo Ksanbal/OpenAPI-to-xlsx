@@ -4,9 +4,11 @@
 import ExcelJS from 'exceljs';
 
 // load openapi json
-import spec from '../.cache/example.json';
+// import spec from '../.cache/example.json';
+import spec from '../.cache/example2.json';
 import createCover from './functions/createCover';
 import createIndex from './functions/createIndex';
+import createPaths from './functions/createPaths';
 
 // OpenAPI Info 가져오기
 const info = spec.info;
@@ -39,18 +41,29 @@ try {
   const workbook = new ExcelJS.Workbook();
 
   // 표지 생성
+  process.stdout.write('Create Cover...');
+  console.log('Done');
   createCover(workbook, info);
 
   // tag별 paths 묶음
+  process.stdout.write('Create Index...');
   createIndex(
     workbook,
     spec.servers,
     spec.components.securitySchemes,
     pathsByTag,
   );
+  console.log('Done');
+
+  // path별 sheet
+  process.stdout.write('Create Paths...');
+  createPaths(workbook, pathsByTag, spec.components.schemas);
+  console.log('Done');
 
   // 엑셀을 파일로 export
+  process.stdout.write('Export xlsx...');
   workbook.xlsx.writeFile('./output.xlsx');
+  console.log('Done');
 } catch (error) {
   console.error(error);
 }
