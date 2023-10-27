@@ -1,6 +1,6 @@
 {
   "name": "openapi-to-xlsx",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Export xlsx from OpenAPI 3",
   "main": "dist/main.js",
   "repository": "https://github.com/Ksanbal/OpenAPI-to-xlsx.git",

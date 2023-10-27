@@ -367,35 +367,80 @@ export default function createPaths(
           // 스키마 불러오기
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           //@ts-ignore
-          const ref = Object.values(path.requestBody.content)[0]
-            .schema.$ref.split('/')
-            .pop();
-          const schema = schemas[ref];
-          for (const [key, value] of Object.entries(schema.properties)) {
-            const anyValue = value as any;
+          const example = Object.values(path.requestBody.content)[0].schema
+            .example;
 
+          if (example) {
             workRow++;
-            sheet.mergeCells(`C${workRow}`, `F${workRow}`);
-            // key
-            sheet.getCell(`A${workRow}`).value = key;
+            sheet.mergeCells(`A${workRow}`, `G${workRow}`);
+            sheet.getCell(`A${workRow}`).value = 'Example';
+            rowStyle(
+              sheet,
+              workRow,
+              'A',
+              'G',
+              undefined,
+              {
+                alignment: {
+                  horizontal: 'center',
+                },
+              },
+              {
+                type: 'pattern',
+                pattern: 'solid',
+                fgColor: { argb: mainColor },
+              },
+              {
+                top: { style: 'thin' },
+                left: { style: 'thin' },
+                bottom: { style: 'thin' },
+                right: { style: 'thin' },
+              },
+            );
+            workRow++;
 
-            // type
-            if (anyValue.type === 'array') {
-              sheet.getCell(`B${workRow}`).value = `${anyValue.items.type}[]`;
-            } else {
-              sheet.getCell(`B${workRow}`).value = anyValue.type;
-            }
-
-            // description
-            sheet.getCell(`C${workRow}`).value = anyValue.description ?? '';
-
-            // requried
-            sheet.getCell(`G${workRow}`).value = schema.required?.includes(key)
-              ? 'O'
-              : 'X';
-            sheet.getCell(`G${workRow}`).alignment = { horizontal: 'center' };
-
+            sheet.mergeCells(`A${workRow}`, `G${workRow}`);
+            sheet.getCell(`A${workRow}`).value = JSON.stringify(
+              example,
+              null,
+              2,
+            );
             rowBorder(sheet, workRow, 'A', 'G');
+          } else {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            //@ts-ignore
+            const ref = Object.values(path.requestBody.content)[0]
+              .schema.$ref.split('/')
+              .pop();
+            const schema = schemas[ref];
+            for (const [key, value] of Object.entries(schema.properties)) {
+              const anyValue = value as any;
+
+              workRow++;
+              sheet.mergeCells(`C${workRow}`, `F${workRow}`);
+              // key
+              sheet.getCell(`A${workRow}`).value = key;
+
+              // type
+              if (anyValue.type === 'array') {
+                sheet.getCell(`B${workRow}`).value = `${anyValue.items.type}[]`;
+              } else {
+                sheet.getCell(`B${workRow}`).value = anyValue.type;
+              }
+
+              // description
+              sheet.getCell(`C${workRow}`).value = anyValue.description ?? '';
+
+              // requried
+              sheet.getCell(`G${workRow}`).value = schema.required?.includes(
+                key,
+              )
+                ? 'O'
+                : 'X';
+              sheet.getCell(`G${workRow}`).alignment = { horizontal: 'center' };
+
+              rowBorder(sheet, workRow, 'A', 'G');
+            }
           }
         } else if (contentType === 'multipart/form-data') {
           const schema = path.requestBody.content['multipart/form-data'].schema;
@@ -589,6 +634,7 @@ export default function createPaths(
                 2,
               );
               rowBorder(sheet, workRow, 'A', 'G');
+              workRow++;
             } else if (schema['$ref']) {
               // ref
               workRow = createRecursiveProperties(

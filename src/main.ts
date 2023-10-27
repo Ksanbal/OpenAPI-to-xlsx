@@ -4,8 +4,8 @@
 import ExcelJS from 'exceljs';
 
 // load openapi json
-// import spec from '../.cache/example.json';
-import spec from '../.cache/example2.json';
+import spec from '../.cache/example.json';
+// import spec from '../.cache/example2.json';
 import createCover from './functions/createCover';
 import createIndex from './functions/createIndex';
 import createPaths from './functions/createPaths';
